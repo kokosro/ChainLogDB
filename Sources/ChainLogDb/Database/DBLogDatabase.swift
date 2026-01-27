@@ -61,6 +61,12 @@ public actor DBLogDatabase {
         self.db = database
         self.isOpen = true
         
+        // Enable WAL mode for better concurrent access
+        try execute("PRAGMA journal_mode = WAL")
+        
+        // Set busy timeout to 5 seconds to handle concurrent access
+        try execute("PRAGMA busy_timeout = 5000")
+        
         // Enable foreign keys
         try execute("PRAGMA foreign_keys = ON")
         
