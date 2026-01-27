@@ -1,0 +1,51 @@
+{
+  "originHash" : "44f310fb38635067f772aaebcf91e1238c86a4db80ff003c18cd91b942bfbda8",
+  "pins" : [
+    {
+      "identity" : "bigint",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/attaswift/BigInt",
+      "state" : {
+        "revision" : "e07e00fa1fd435143a2dcf8b7eec9a7710b2fdfe",
+        "version" : "5.7.0"
+      }
+    },
+    {
+      "identity" : "bls-eth-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/MyEtherWallet/bls-eth-swift",
+      "state" : {
+        "revision" : "d1e5e19f80aaee7c7ec8f28c92291abc5c0e840e",
+        "version" : "1.0.1"
+      }
+    },
+    {
+      "identity" : "chainkeys",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kokosro/ChainKeys",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a6d4bb870993c98a046e2beb72d4d63b1ad661ee"
+      }
+    },
+    {
+      "identity" : "k1",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Sajjon/K1",
+      "state" : {
+        "revision" : "c77e6c2bd23ec019b7ecf80b567f5eccbec59887",
+        "version" : "0.6.0"
+      }
+    },
+    {
+      "identity" : "swiftkeccak",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/bitflying/SwiftKeccak",
+      "state" : {
+        "revision" : "5fc323d4b08a8c77cbb690505445b32a3b5a8aff",
+        "version" : "0.1.2"
+      }
+    }
+  ],
+  "version" : 3
+}
