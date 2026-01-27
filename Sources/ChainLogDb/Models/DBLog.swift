@@ -303,52 +303,6 @@ extension DBLogValue: Codable {
     }
 }
 
-// MARK: - ExpressibleBy Protocol Conformances
-
-extension DBLogValue: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self = .string(value)
-    }
-}
-
-extension DBLogValue: ExpressibleByIntegerLiteral {
-    public init(integerLiteral value: Int) {
-        self = .int(value)
-    }
-}
-
-extension DBLogValue: ExpressibleByFloatLiteral {
-    public init(floatLiteral value: Double) {
-        self = .double(value)
-    }
-}
-
-extension DBLogValue: ExpressibleByBooleanLiteral {
-    public init(booleanLiteral value: Bool) {
-        self = .bool(value)
-    }
-}
-
-extension DBLogValue: ExpressibleByNilLiteral {
-    public init(nilLiteral: ()) {
-        self = .null
-    }
-}
-
-extension DBLogValue: ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: DBLogValue...) {
-        self = .array(elements)
-    }
-}
-
-extension DBLogValue: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (String, DBLogValue)...) {
-        self = .object(Dictionary(uniqueKeysWithValues: elements))
-    }
-}
-
-// MARK: - SQL Conversion Extensions
-
 extension DBLogValue {
     /// Convert to SQL-compatible value for binding
     nonisolated public var sqlValue: Any? {

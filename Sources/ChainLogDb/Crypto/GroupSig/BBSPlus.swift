@@ -376,12 +376,46 @@ public enum BBSPlus {
     }
     
     /// Deserialize group signature from JSON string
+    /// Handles both raw BBS+ format and wrapped format from node-client
     public static func deserializeGroupSignature(_ json: String) throws -> GroupSignature {
         guard let data = json.data(using: .utf8) else {
             throw GroupSigError.invalidSignature("Invalid JSON encoding")
         }
+        
+        // First, try to decode as raw BBS+ signature (APrime, ABar, etc.)
+        if let signature = try? JSONDecoder().decode(GroupSignature.self, from: data) {
+            return signature
+        }
+        
+        // Try wrapped format from node-client: { proof, nonce, commitment }
+        // where proof is hex-encoded JSON of the BBS+ signature
+        struct WrappedSignature: Codable {
+            let proof: String
+            let nonce: String
+            let commitment: String
+        }
+        
         do {
-            return try JSONDecoder().decode(GroupSignature.self, from: data)
+            let wrapped = try JSONDecoder().decode(WrappedSignature.self, from: data)
+            
+            // Decode hex-encoded proof to get the inner BBS+ signature JSON
+            var proofHex = wrapped.proof
+            if proofHex.hasPrefix("0x") {
+                proofHex = String(proofHex.dropFirst(2))
+            }
+            
+            guard let proofData = Data(hex: proofHex),
+                  let proofJson = String(data: proofData, encoding: .utf8) else {
+                throw GroupSigError.invalidSignature("Invalid proof hex encoding")
+            }
+            
+            guard let innerData = proofJson.data(using: .utf8) else {
+                throw GroupSigError.invalidSignature("Invalid inner JSON encoding")
+            }
+            
+            return try JSONDecoder().decode(GroupSignature.self, from: innerData)
+        } catch let error as GroupSigError {
+            throw error
         } catch {
             throw GroupSigError.invalidSignature(error.localizedDescription)
         }
