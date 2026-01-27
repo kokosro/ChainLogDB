@@ -72,6 +72,19 @@ public func initializeBLS() throws {
             print("[BLS12381] WARNING: hashToScalar DIFFERS from TypeScript!")
             print("[BLS12381] Expected: \(expectedScalar)")
         }
+        
+        // G1 * scalar compatibility test
+        // Use the test scalar we just computed, multiply generator by it
+        // TypeScript should produce same result for: G1.BASE.multiply(testScalar).toHex(true)
+        let genTimesTestScalar = BLS12381.g1Mul(gen, testScalar)
+        var buf3 = [UInt8](repeating: 0, count: 48)
+        var gen3Copy = genTimesTestScalar.point
+        let len3 = blsPublicKeySerialize(&buf3, buf3.count, &gen3Copy)
+        if len3 > 0 {
+            let gen3Hex = "0x" + Data(buf3.prefix(Int(len3))).map { String(format: "%02x", $0) }.joined()
+            print("[BLS12381] G1 * hashToScalar('test-hash-to-scalar') = \(gen3Hex)")
+            // To verify: In TypeScript, run: G1.BASE.multiply(0x2305a6bbe1b65a4e3251d4c3cd2a78752cfca572a63a22fee722b309d8088555n).toHex(true)
+        }
     }
 }
 
