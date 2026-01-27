@@ -254,6 +254,103 @@ public final class ChainLogAPIClient: @unchecked Sendable {
     public func unregisterDeviceToken(_ token: String) async throws {
         let _ = try await authRequest("/self/device-token/\(token)", method: "DELETE")
     }
+    
+    // MARK: - KV Store
+    
+    /// List all KV items (encrypted)
+    /// - Returns: Array of encrypted KV item metadata
+    public func listKvItems() async throws -> [EncryptedKvItemMeta] {
+        let data = try await authRequest("/self/kv")
+        let response = try decoder.decode(KvListResponse.self, from: data)
+        return response.items
+    }
+    
+    /// Get a specific KV item by ID (encrypted)
+    /// - Parameter id: The KV item ID
+    /// - Returns: Full encrypted KV item with value
+    public func getKvItem(_ id: String) async throws -> EncryptedKvItem {
+        let data = try await authRequest("/self/kv/\(id)")
+        return try decoder.decode(EncryptedKvItem.self, from: data)
+    }
+    
+    /// Create a new KV item
+    /// - Parameters:
+    ///   - name: Encrypted name
+    ///   - value: Encrypted value
+    /// - Returns: Created encrypted KV item
+    public func createKvItem(name: String, value: String) async throws -> EncryptedKvItem {
+        let body = try encoder.encode(["name": name, "value": value])
+        let data = try await authRequest("/self/kv", method: "POST", body: body)
+        return try decoder.decode(EncryptedKvItem.self, from: data)
+    }
+    
+    /// Update an existing KV item
+    /// - Parameters:
+    ///   - id: The KV item ID
+    ///   - value: New encrypted value
+    public func updateKvItem(_ id: String, value: String) async throws {
+        let body = try encoder.encode(["value": value])
+        let _ = try await authRequest("/self/kv/\(id)", method: "PUT", body: body)
+    }
+    
+    /// Delete a KV item
+    /// - Parameter id: The KV item ID
+    public func deleteKvItem(_ id: String) async throws {
+        let _ = try await authRequest("/self/kv/\(id)", method: "DELETE")
+    }
+    
+    // MARK: - List Store
+    
+    /// List all lists (encrypted)
+    /// - Returns: Array of encrypted list metadata
+    public func getLists() async throws -> [EncryptedListMeta] {
+        let data = try await authRequest("/self/lists")
+        let response = try decoder.decode(ListsResponse.self, from: data)
+        return response.lists
+    }
+    
+    /// Create a new list
+    /// - Parameter name: Encrypted list name
+    /// - Returns: Created encrypted list metadata
+    public func createList(name: String) async throws -> EncryptedListMeta {
+        let body = try encoder.encode(["name": name])
+        let data = try await authRequest("/self/lists", method: "POST", body: body)
+        return try decoder.decode(EncryptedListMeta.self, from: data)
+    }
+    
+    /// Delete a list
+    /// - Parameter id: The list ID
+    public func deleteList(_ id: String) async throws {
+        let _ = try await authRequest("/self/lists/\(id)", method: "DELETE")
+    }
+    
+    /// Get items in a list (encrypted)
+    /// - Parameter listId: The list ID
+    /// - Returns: Array of encrypted list items
+    public func getListItems(_ listId: String) async throws -> [EncryptedListItem] {
+        let data = try await authRequest("/self/lists/\(listId)")
+        let response = try decoder.decode(ListItemsResponse.self, from: data)
+        return response.items
+    }
+    
+    /// Push an item to a list
+    /// - Parameters:
+    ///   - listId: The list ID
+    ///   - value: Encrypted item value
+    /// - Returns: Created encrypted list item
+    public func pushListItem(_ listId: String, value: String) async throws -> EncryptedListItem {
+        let body = try encoder.encode(["value": value])
+        let data = try await authRequest("/self/lists/\(listId)", method: "POST", body: body)
+        return try decoder.decode(EncryptedListItem.self, from: data)
+    }
+    
+    /// Delete an item from a list
+    /// - Parameters:
+    ///   - listId: The list ID
+    ///   - itemId: The item ID
+    public func deleteListItem(_ listId: String, itemId: String) async throws {
+        let _ = try await authRequest("/self/lists/\(listId)/\(itemId)", method: "DELETE")
+    }
 }
 
 // MARK: - Device Token Request
