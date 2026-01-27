@@ -22,6 +22,16 @@ public enum WebSocketEventType: String, Codable, Sendable {
 
 // MARK: - WebSocket Data Types
 
+public struct WebSocketNewPackageData: Codable, Sendable {
+    public let id: String
+    public let pairId: String
+    public let counterpartyAddress: String
+    public let direction: String
+    public let packageType: String  // encrypted
+    public let createdAt: Int
+    public let readAt: Int?
+}
+
 public struct WebSocketNewLogData: Codable, Sendable {
     public let index: Int
     public let prevHash: String
@@ -68,6 +78,9 @@ public struct WebSocketMessage<T: Codable>: Codable {
 /// Delegate protocol for handling WebSocket events
 /// Implement this to receive real-time updates
 public protocol WebSocketClientDelegate: AnyObject, Sendable {
+    /// Called when a new package is received
+    func webSocketClient(_ client: WebSocketClient, didReceivePackage data: WebSocketNewPackageData)
+    
     /// Called when a new personal log entry is received
     func webSocketClient(_ client: WebSocketClient, didReceiveLog data: WebSocketNewLogData)
     
@@ -107,6 +120,7 @@ public final class WebSocketClient: ObservableObject {
     @Published public private(set) var connectionError: String?
     
     // Event publishers
+    public let newPackagePublisher = PassthroughSubject<WebSocketNewPackageData, Never>()
     public let newLogPublisher = PassthroughSubject<WebSocketNewLogData, Never>()
     public let logStreamEndPublisher = PassthroughSubject<WebSocketLogStreamEndData, Never>()
     public let connectedPublisher = PassthroughSubject<WebSocketConnectedData, Never>()
@@ -274,6 +288,12 @@ public final class WebSocketClient: ObservableObject {
         print("[WS] Received: \(wrapper.event)")
         
         switch wrapper.event {
+        case "new_package":
+            if let message = try? decoder.decode(WebSocketMessage<WebSocketNewPackageData>.self, from: data) {
+                newPackagePublisher.send(message.data)
+                delegate?.webSocketClient(self, didReceivePackage: message.data)
+            }
+            
         case "new_log":
             if let message = try? decoder.decode(WebSocketMessage<WebSocketNewLogData>.self, from: data) {
                 newLogPublisher.send(message.data)
@@ -436,6 +456,7 @@ public final class WebSocketClient: ObservableObject {
 // MARK: - Default Delegate Implementation
 
 public extension WebSocketClientDelegate {
+    func webSocketClient(_ client: WebSocketClient, didReceivePackage data: WebSocketNewPackageData) {}
     func webSocketClient(_ client: WebSocketClient, didReceiveLog data: WebSocketNewLogData) {}
     func webSocketClient(_ client: WebSocketClient, didReceiveLogStreamEnd data: WebSocketLogStreamEndData) {}
     func webSocketClient(_ client: WebSocketClient, didConnect data: WebSocketConnectedData) {}

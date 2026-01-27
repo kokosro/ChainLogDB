@@ -173,4 +173,62 @@ public final class ChainLogAPIClient: @unchecked Sendable {
         let data = try await authRequest("/groups/\(groupId)/logs/\(dbName)", method: "POST", body: body)
         return try decoder.decode(ServerGroupLogEntry.self, from: data)
     }
+    
+    // MARK: - Packages
+    
+    /// List packages with optional filters
+    /// - Parameters:
+    ///   - lastId: Pagination cursor (last package id from previous page)
+    ///   - limit: Maximum number of packages to return
+    ///   - contact: Filter by counterparty address
+    ///   - direction: Filter by direction (sent/received)
+    ///   - since: Only packages created after this date
+    /// - Returns: Tuple of encrypted package metadata and hasMore flag
+    public func listPackages(
+        lastId: String? = nil,
+        limit: Int = 50,
+        contact: String? = nil,
+        direction: PackageDirection? = nil,
+        since: Date? = nil
+    ) async throws -> (packages: [EncryptedPackageMeta], hasMore: Bool) {
+        var params: [String] = []
+        if let lastId = lastId { params.append("lastId=\(lastId)") }
+        params.append("limit=\(limit)")
+        if let contact = contact { params.append("contact=\(contact)") }
+        if let direction = direction { params.append("direction=\(direction.rawValue)") }
+        if let since = since {
+            let timestamp = Int(since.timeIntervalSince1970 * 1000)
+            params.append("since=\(timestamp)")
+        }
+        
+        let query = params.isEmpty ? "" : "?\(params.joined(separator: "&"))"
+        let data = try await authRequest("/self/packages\(query)")
+        let response = try decoder.decode(PackageListResponse.self, from: data)
+        
+        return (response.packages, response.hasMore)
+    }
+    
+    /// Get a specific package by ID
+    public func getPackage(_ id: String) async throws -> EncryptedPackage {
+        let data = try await authRequest("/self/packages/\(id)")
+        return try decoder.decode(EncryptedPackage.self, from: data)
+    }
+    
+    /// Send a package (encrypted message)
+    /// Note: Encryption should be done by the app before calling this
+    public func sendPackage(_ request: SendPackageRequest) async throws -> SendPackageResponse {
+        let body = try encoder.encode(request)
+        let data = try await authRequest("/self/packages", method: "POST", body: body)
+        return try decoder.decode(SendPackageResponse.self, from: data)
+    }
+    
+    /// Mark a package as read
+    public func markPackageRead(_ id: String) async throws {
+        let _ = try await authRequest("/self/packages/\(id)/read", method: "PATCH")
+    }
+    
+    /// Delete a package
+    public func deletePackage(_ id: String) async throws {
+        let _ = try await authRequest("/self/packages/\(id)", method: "DELETE")
+    }
 }
