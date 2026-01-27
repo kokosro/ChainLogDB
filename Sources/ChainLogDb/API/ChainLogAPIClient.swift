@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ChainKeys
 
 // MARK: - Chain Log API Client
 
