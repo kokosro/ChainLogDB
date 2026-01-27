@@ -244,12 +244,26 @@ public enum BBSPlus {
             if debug {
                 print("[BBS+ Debug] h0 from GPK: \(groupPublicKey.h0)")
                 print("[BBS+ Debug] h1 from GPK: \(groupPublicKey.h1)")
+                print("[BBS+ Debug] d from sig: \(signature.d)")
+                print("[BBS+ Debug] c from sig (hex): \(signature.c)")
                 print("[BBS+ Debug] sR2 from sig: \(signature.sR2)")
                 print("[BBS+ Debug] sX from sig: \(signature.sX)")
-                print("[BBS+ Debug] h0^sR2: \(BLS12381.serializeG1(h0sR2))")
-                print("[BBS+ Debug] h1^sXR: \(BLS12381.serializeG1(h1sXR))")
-                print("[BBS+ Debug] d^(-c): \(BLS12381.serializeG1(dNegC))")
+                
+                // Show how mcl interprets the scalars (round-trip test)
+                print("[BBS+ Debug] sR2 interpreted by mcl: \(BLS12381.scalarToHex(sR2))")
+                print("[BBS+ Debug] sXR interpreted by mcl: \(BLS12381.scalarToHex(sXR))")
+                print("[BBS+ Debug] c interpreted by mcl: \(BLS12381.scalarToHex(c))")
+                print("[BBS+ Debug] negC (-c) by mcl: \(BLS12381.scalarToHex(negC))")
+                
+                // Show intermediate computations
+                print("[BBS+ Debug] h0^sR2 serialized: \(BLS12381.serializeG1(h0sR2))")
+                print("[BBS+ Debug] h1^sXR serialized: \(BLS12381.serializeG1(h1sXR))")
+                print("[BBS+ Debug] d^(-c) serialized: \(BLS12381.serializeG1(dNegC))")
                 print("[BBS+ Debug] T' = h0^sR2 + h1^sXR + d^(-c): \(BLS12381.serializeG1(TPrime))")
+                
+                // Critical: show the X coordinate bytes for T' that go into challenge
+                let xTPrimeBytes = BLS12381.g1GetXBuffer(TPrime)
+                print("[BBS+ Debug] T' X coord bytes (for challenge): \(xTPrimeBytes.hexString)")
             }
             
             // Recompute challenge and verify it matches
