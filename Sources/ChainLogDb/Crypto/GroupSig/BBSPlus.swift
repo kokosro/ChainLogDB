@@ -241,6 +241,17 @@ public enum BBSPlus {
             let dNegC = BLS12381.g1Mul(d, negC)
             let TPrime = BLS12381.g1Add(BLS12381.g1Add(h0sR2, h1sXR), dNegC)
             
+            if debug {
+                print("[BBS+ Debug] h0 from GPK: \(groupPublicKey.h0)")
+                print("[BBS+ Debug] h1 from GPK: \(groupPublicKey.h1)")
+                print("[BBS+ Debug] sR2 from sig: \(signature.sR2)")
+                print("[BBS+ Debug] sX from sig: \(signature.sX)")
+                print("[BBS+ Debug] h0^sR2: \(BLS12381.serializeG1(h0sR2))")
+                print("[BBS+ Debug] h1^sXR: \(BLS12381.serializeG1(h1sXR))")
+                print("[BBS+ Debug] d^(-c): \(BLS12381.serializeG1(dNegC))")
+                print("[BBS+ Debug] T' = h0^sR2 + h1^sXR + d^(-c): \(BLS12381.serializeG1(TPrime))")
+            }
+            
             // Recompute challenge and verify it matches
             // Use X coordinates only to match node-client/server
             var challengeInput = Data(message.utf8)
