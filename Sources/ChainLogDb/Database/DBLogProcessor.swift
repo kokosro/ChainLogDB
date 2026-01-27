@@ -286,7 +286,7 @@ public enum DBLogProcessor {
 
 // MARK: - String SQL Escaping Extension
 
-extension String {
+public extension String {
     /// Escape a string value for SQL (wraps in single quotes, escapes internal quotes)
     nonisolated var sqlEscaped: String {
         let escaped = self.replacingOccurrences(of: "'", with: "''")
