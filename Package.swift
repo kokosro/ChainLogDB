@@ -13,12 +13,21 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/kokosro/ChainKeys", branch: "main"),
+        // Crypto dependencies (previously from ChainKeys)
+        .package(url: "https://github.com/Sajjon/K1", from: "0.3.0"),
+        .package(url: "https://github.com/bitflying/SwiftKeccak", from: "0.1.0"),
+        .package(url: "https://github.com/attaswift/BigInt", from: "5.3.0"),
+        .package(url: "https://github.com/MyEtherWallet/bls-eth-swift", from: "1.0.0"),
     ],
     targets: [
         .target(
             name: "ChainLogDb",
-            dependencies: ["ChainKeys"]
+            dependencies: [
+                "K1",
+                "SwiftKeccak",
+                "BigInt",
+                .product(name: "bls-eth-swift", package: "bls-eth-swift"),
+            ]
         ),
         .testTarget(
             name: "ChainLogDbTests",

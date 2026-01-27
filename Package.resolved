@@ -1,5 +1,5 @@
 {
-  "originHash" : "44f310fb38635067f772aaebcf91e1238c86a4db80ff003c18cd91b942bfbda8",
+  "originHash" : "1c65b9644ba2db58d0477c27d0911dfb4d480a54dbef9367597cf59f96ea5f3a",
   "pins" : [
     {
       "identity" : "bigint",
@@ -17,15 +17,6 @@
       "state" : {
         "revision" : "d1e5e19f80aaee7c7ec8f28c92291abc5c0e840e",
         "version" : "1.0.1"
-      }
-    },
-    {
-      "identity" : "chainkeys",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kokosro/ChainKeys",
-      "state" : {
-        "branch" : "main",
-        "revision" : "a6d4bb870993c98a046e2beb72d4d63b1ad661ee"
       }
     },
     {

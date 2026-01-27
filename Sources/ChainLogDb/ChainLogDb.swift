@@ -2,9 +2,10 @@
 //  ChainLogDb.swift
 //  ChainLogDb
 //
-//  Main entry point for the ChainLogDb package
+//  Main entry point for the ChainLogDb unified package
 //
 //  This package provides:
+//  - Cryptography (Ethereum-compatible crypto, MLS, BBS+)
 //  - Chain log models (ChainLog, GroupChainLog)
 //  - DBLog event-driven database models and processor
 //  - SQLite database wrapper (DBLogDatabase)
@@ -19,5 +20,5 @@
 
 import Foundation
 
-// Re-export ChainKeys for convenience
-@_exported import ChainKeys
+// All crypto types are now part of this package (in Crypto/ folder)
+// Types exported: Cryptograph, MLSGroup, BBSPlus, AccessProofUtils, etc.
