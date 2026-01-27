@@ -210,6 +210,14 @@ public enum BBSPlus {
             let sXR = BLS12381.scalarFromHex(signature.sX)
             let sR2 = BLS12381.scalarFromHex(signature.sR2)
             
+            if debug {
+                // Round-trip test: deserialize + serialize should give same bytes
+                let APrimeReserialized = BLS12381.serializeG1(APrime)
+                print("[BBS+ Debug] APrime input:        \(signature.APrime)")
+                print("[BBS+ Debug] APrime reserialized: \(APrimeReserialized)")
+                print("[BBS+ Debug] APrime match: \(signature.APrime.lowercased() == APrimeReserialized.lowercased())")
+            }
+            
             // Parse public key
             let h0 = try BLS12381.deserializeG1(groupPublicKey.h0)
             let h1 = try BLS12381.deserializeG1(groupPublicKey.h1)
