@@ -444,6 +444,69 @@ public final class WebSocketClient: ObservableObject {
         }
     }
     
+    // MARK: - Device Registration
+    
+    /// Register device token for push notifications via WebSocket
+    /// - Parameters:
+    ///   - token: The device token from APNs
+    ///   - platform: Platform identifier (e.g., "ios", "macos")
+    ///   - environment: APNs environment ("production" or "sandbox")
+    public func registerDevice(token: String, platform: String = "ios", environment: String = "production") {
+        guard let task = webSocketTask, isConnected else {
+            print("[WS] Not connected, cannot register device")
+            return
+        }
+        
+        let message: [String: Any] = [
+            "type": "register_device",
+            "token": token,
+            "platform": platform,
+            "environment": environment
+        ]
+        
+        guard let data = try? JSONSerialization.data(withJSONObject: message),
+              let text = String(data: data, encoding: .utf8) else {
+            print("[WS] Failed to serialize register_device message")
+            return
+        }
+        
+        task.send(.string(text)) { error in
+            if let error = error {
+                print("[WS] Failed to register device: \(error)")
+            } else {
+                print("[WS] Registered device token for \(platform) (\(environment))")
+            }
+        }
+    }
+    
+    /// Unregister device token via WebSocket
+    /// - Parameter token: The device token to unregister
+    public func unregisterDevice(token: String) {
+        guard let task = webSocketTask, isConnected else {
+            print("[WS] Not connected, cannot unregister device")
+            return
+        }
+        
+        let message: [String: Any] = [
+            "type": "unregister_device",
+            "token": token
+        ]
+        
+        guard let data = try? JSONSerialization.data(withJSONObject: message),
+              let text = String(data: data, encoding: .utf8) else {
+            print("[WS] Failed to serialize unregister_device message")
+            return
+        }
+        
+        task.send(.string(text)) { error in
+            if let error = error {
+                print("[WS] Failed to unregister device: \(error)")
+            } else {
+                print("[WS] Unregistered device token")
+            }
+        }
+    }
+    
     // MARK: - Cleanup
     
     public func cleanup() {

@@ -231,4 +231,41 @@ public final class ChainLogAPIClient: @unchecked Sendable {
     public func deletePackage(_ id: String) async throws {
         let _ = try await authRequest("/self/packages/\(id)", method: "DELETE")
     }
+    
+    // MARK: - Device Token
+    
+    /// Register a device token for push notifications
+    /// - Parameters:
+    ///   - token: The device token from APNs
+    ///   - platform: Platform identifier (e.g., "ios", "macos")
+    ///   - environment: APNs environment ("production" or "sandbox")
+    public func registerDeviceToken(_ token: String, platform: String, environment: String) async throws {
+        let request = RegisterDeviceTokenRequest(
+            token: token,
+            platform: platform,
+            environment: environment
+        )
+        let body = try encoder.encode(request)
+        let _ = try await authRequest("/self/device-token", method: "POST", body: body)
+    }
+    
+    /// Unregister a device token
+    /// - Parameter token: The device token to unregister
+    public func unregisterDeviceToken(_ token: String) async throws {
+        let _ = try await authRequest("/self/device-token/\(token)", method: "DELETE")
+    }
+}
+
+// MARK: - Device Token Request
+
+public struct RegisterDeviceTokenRequest: Codable, Sendable {
+    public let token: String
+    public let platform: String
+    public let environment: String
+    
+    public init(token: String, platform: String, environment: String) {
+        self.token = token
+        self.platform = platform
+        self.environment = environment
+    }
 }
