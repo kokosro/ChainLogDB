@@ -49,6 +49,29 @@ public func initializeBLS() throws {
     if len > 0 {
         let genHex = "0x" + Data(buf.prefix(Int(len))).map { String(format: "%02x", $0) }.joined()
         print("[BLS12381] G1 generator (mcl): \(genHex)")
+        
+        // Standard BLS12-381 G1 generator (Zcash/ETH compatible)
+        let expectedGen = "0x97f1d3a73197d7942695638c4fa9ac0fc3688c4f9774b905a14e3a3f171bac586c55e83ff97a1aeffb3af00adb22c6bb"
+        if genHex.lowercased() == expectedGen.lowercased() {
+            print("[BLS12381] G1 generator matches standard ✓")
+        } else {
+            print("[BLS12381] WARNING: G1 generator DIFFERS from standard!")
+            print("[BLS12381] Expected: \(expectedGen)")
+        }
+        
+        // hashToScalar compatibility test - compare with TypeScript result
+        // TypeScript: hashToScalar("test-hash-to-scalar") = 0x2305a6bbe1b65a4e3251d4c3cd2a78752cfca572a63a22fee722b309d8088555
+        let testInput = Data("test-hash-to-scalar".utf8)
+        let testScalar = BLS12381.hashToScalar(testInput)
+        let testScalarHex = BLS12381.scalarToHex(testScalar)
+        let expectedScalar = "0x2305a6bbe1b65a4e3251d4c3cd2a78752cfca572a63a22fee722b309d8088555"
+        print("[BLS12381] hashToScalar('test-hash-to-scalar') = \(testScalarHex)")
+        if testScalarHex.lowercased() == expectedScalar.lowercased() {
+            print("[BLS12381] hashToScalar matches TypeScript ✓")
+        } else {
+            print("[BLS12381] WARNING: hashToScalar DIFFERS from TypeScript!")
+            print("[BLS12381] Expected: \(expectedScalar)")
+        }
     }
 }
 
