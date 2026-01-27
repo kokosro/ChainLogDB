@@ -236,11 +236,26 @@ public enum BBSPlus {
             // Recompute challenge and verify it matches
             // Use X coordinates only to match node-client/server
             var challengeInput = Data(message.utf8)
-            challengeInput.append(BLS12381.g1GetXBuffer(APrime))
-            challengeInput.append(BLS12381.g1GetXBuffer(ABar))
-            challengeInput.append(BLS12381.g1GetXBuffer(d))
-            challengeInput.append(BLS12381.g1GetXBuffer(TPrime))
+            let xAPrime = BLS12381.g1GetXBuffer(APrime)
+            let xABar = BLS12381.g1GetXBuffer(ABar)
+            let xD = BLS12381.g1GetXBuffer(d)
+            let xTPrime = BLS12381.g1GetXBuffer(TPrime)
+            challengeInput.append(xAPrime)
+            challengeInput.append(xABar)
+            challengeInput.append(xD)
+            challengeInput.append(xTPrime)
             let cPrime = BLS12381.hashToScalar(challengeInput)
+            
+            if debug {
+                print("[BBS+ Debug] Message: \(message)")
+                print("[BBS+ Debug] xAPrime (\(xAPrime.count) bytes): \(xAPrime.hexString)")
+                print("[BBS+ Debug] xABar (\(xABar.count) bytes): \(xABar.hexString)")
+                print("[BBS+ Debug] xD (\(xD.count) bytes): \(xD.hexString)")
+                print("[BBS+ Debug] xTPrime (\(xTPrime.count) bytes): \(xTPrime.hexString)")
+                print("[BBS+ Debug] challengeInput (\(challengeInput.count) bytes): \(challengeInput.hexString)")
+                print("[BBS+ Debug] c from signature: \(signature.c)")
+                print("[BBS+ Debug] c' computed: \(BLS12381.scalarToHex(cPrime))")
+            }
             
             if c != cPrime {
                 return GroupSigVerifyResult.failure("Invalid signature: challenge mismatch")
