@@ -57,6 +57,24 @@ public struct EncryptedChainLogEntry: Codable, Sendable {
     public let hash: String
     public let signature: String
     public let createdAt: Int       // Unix timestamp in milliseconds
+    
+    public init(
+        index: Int,
+        prevHash: String,
+        content: String,
+        nonce: String,
+        hash: String,
+        signature: String,
+        createdAt: Int
+    ) {
+        self.index = index
+        self.prevHash = prevHash
+        self.content = content
+        self.nonce = nonce
+        self.hash = hash
+        self.signature = signature
+        self.createdAt = createdAt
+    }
 }
 
 // MARK: - Protocol Conformance
