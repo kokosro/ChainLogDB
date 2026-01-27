@@ -40,6 +40,16 @@ public func initializeBLS() throws {
     _ = blsSetETHmode(BLS_ETH_MODE_LATEST)
     
     blsInitialized = true
+    
+    // Debug: Print the G1 generator to compare with noble/curves
+    let gen = G1Point.generator
+    var buf = [UInt8](repeating: 0, count: 48)
+    var genCopy = gen.point
+    let len = blsPublicKeySerialize(&buf, buf.count, &genCopy)
+    if len > 0 {
+        let genHex = "0x" + Data(buf.prefix(Int(len))).map { String(format: "%02x", $0) }.joined()
+        print("[BLS12381] G1 generator (mcl): \(genHex)")
+    }
 }
 
 // MARK: - Type Wrappers
